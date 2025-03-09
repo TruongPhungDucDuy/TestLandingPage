@@ -210,18 +210,15 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
             total: total
         };
 
-        let response = await fetch("https://script.google.com/macros/s/AKfycbxzdPVdzPnKOk1WRX6Qh1PTDJBAhAMUXpy74Gi2rztxhy8fNQQA6tpgta40hk248Tc/exec", {
-            method: "POST",
-            body: JSON.stringify(formData),
-            headers: { "Content-Type": "application/json" }
-        });
+        fetch("https://form-proxy.your-workers-subdomain.workers.dev", {  
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(formData),
+})
+  .then(response => response.json())
+  .then(data => console.log("Success:", data))
+  .catch(error => console.error("Error:", error));
 
-        if (response.ok) {
-            alert("Đặt hàng thành công!");
-            closeForm();
-        } else {
-            alert("Có lỗi xảy ra, vui lòng thử lại.");
-        }
     });
     </script>
 </body>
