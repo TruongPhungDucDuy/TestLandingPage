@@ -42,10 +42,11 @@
 
     <!-- Form đặt hàng -->
     <div id="formPopup" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-2/3 lg:w-1/2 relative">
-            <button class="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-2xl"
-                    onclick="closeForm()">&times;</button>
-            <h2 class="text-2xl font-semibold mb-4">Đặt hàng</h2>
+    <div id="formContainer" class="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-3/5 lg:w-1/3 relative">
+        <button class="absolute top-3 right-3 text-gray-600 hover:text-gray-800 text-2xl"
+                onclick="closeForm()">&times;</button>
+        <h2 class="text-2xl font-semibold mb-4">Đặt hàng</h2>
+        <div class="overflow-y-auto max-h-[70vh] p-2">
             <form id="orderForm">
                 <input type="text" id="name" placeholder="Họ và tên" required class="w-full p-2 border rounded mb-3">
                 <input type="tel" id="phone" placeholder="Số điện thoại" required class="w-full p-2 border rounded mb-3">
@@ -66,7 +67,6 @@
 
                 <h3 class="font-semibold text-lg mb-3">Chọn sản phẩm</h3>
 
-                <!-- Sản phẩm -->
                 <div class="mb-3">
                     <label class="flex items-center">
                         <input type="checkbox" name="product" value="Muối Ớt Xanh" onchange="toggleQuantity(this)" class="mr-2">
@@ -91,7 +91,6 @@
                     <input type="number" name="quantity" data-product="Muối Ớt Đỏ" min="1" class="w-full p-2 border rounded quantity-input">
                 </div>
 
-                <!-- Combo 3 vị -->
                 <div class="mb-3">
                     <label class="flex items-center">
                         <input type="checkbox" name="product" value="Combo 3 vị" onchange="toggleQuantity(this)" class="mr-2">
@@ -99,20 +98,23 @@
                     </label>
                     <input type="number" name="quantity" data-product="Combo 3 vị" min="1" class="w-full p-2 border rounded quantity-input">
                 </div>
-	
-                <div class="flex justify-between mt-4">
-    <button type="button" class="bg-gray-400 text-white w-1/2 py-2 rounded-lg shadow mr-2"
-            onclick="closeForm()">
-        Đóng
-    </button>
-    <button type="submit" class="bg-blue-500 text-white w-1/2 py-2 rounded-lg shadow">
-        Gửi đơn hàng
-    </button>
-</div>
 
+                <p class="text-lg font-bold mt-4">Tổng tiền: <span id="totalAmount" class="text-red-500">0</span> VND</p>
+
+                <div class="flex justify-between mt-4">
+                    <button type="button" class="bg-gray-400 text-white w-1/2 py-2 rounded-lg shadow mr-2"
+                            onclick="closeForm()">
+                        Đóng
+                    </button>
+                    <button type="submit" class="bg-blue-500 text-white w-1/2 py-2 rounded-lg shadow">
+                        Gửi đơn hàng
+                    </button>
+                </div>
             </form>
         </div>
     </div>
+</div>
+
 
     <script>
         function openForm() {
@@ -187,42 +189,73 @@
 
     fetchProvinces();
 document.getElementById("orderForm").addEventListener("submit", async function(event) {
-        event.preventDefault();
+    event.preventDefault();
 
-        let selectedProducts = [];
-        let total = 0;
-        document.querySelectorAll("input[name='product']:checked").forEach((product) => {
-            let quantity = document.querySelector(`input[data-product="${product.value}"]`).value;
-            if (quantity > 0) {
-                selectedProducts.push(`${product.value} (x${quantity})`);
-                total += quantity * (product.value === "Combo 3 vị" ? 200000 : 100000);
-            }
-        });
+    let formData = new FormData();
+    
+    formData.append("entry.448204511", document.getElementById("name").value); // Họ và tên
+    
+formData.append("entry.542153143", document.getElementById("phone").value); // Số điện thoại
+    
+formData.append("entry.884701166", document.getElementById("province").options[document.getElementById("province").selectedIndex].text); // Tỉnh
+    
+formData.append("entry.1736929701", document.getElementById("district").options[document.getElementById("district").selectedIndex].text); // Huyện
+    
+formData.append("entry.770164974", document.getElementById("ward").options[document.getElementById("ward").selectedIndex].text); // Xã
+    
+formData.append("entry.839831794", document.getElementById("address").value); // Địa chỉ
 
-        let formData = {
-            name: document.getElementById("name").value,
-            phone: document.getElementById("phone").value,
-            province: document.getElementById("province").options[document.getElementById("province").selectedIndex].text,
-            district: document.getElementById("district").options[document.getElementById("district").selectedIndex].text,
-            ward: document.getElementById("ward").options[document.getElementById("ward").selectedIndex].text,
-            address: document.getElementById("address").value,
-            products: selectedProducts,
-            total: total
-        };
+    let selectedProducts = [];
+    let total = 0;
 
-        let response = await fetch("https://script.google.com/macros/s/AKfycbya7RFbeczcJzgEYdfFSdL1V1U3IeUXKVECqFsQvgHqcRgL3vPFCDU8Td_8OdnkuW0/exec", {
-            method: "POST",
-            body: JSON.stringify(formData),
-            headers: { "Content-Type": "application/json" }
-        });
-
-        if (response.ok) {
-            alert("Đặt hàng thành công!");
-            closeForm();
-        } else {
-            alert("Có lỗi xảy ra, vui lòng thử lại.");
+    document.querySelectorAll("input[name='product']:checked").forEach((product) => {
+        let quantity = document.querySelector(`input[data-product="${product.value}"]`).value;
+        if (quantity > 0) {
+            selectedProducts.push(`${product.value} (x${quantity})`);
+            total += quantity * (product.value === "Combo 3 vị" ? 200000 : 100000);
         }
     });
+
+    formData.append("entry.194147620", selectedProducts.join(", ")); // Danh sách sản phẩm
+    formData.append("entry.1424511162", total.toString()); // Tổng tiền
+
+    let googleFormURL = "https://docs.google.com/forms/d/e/1FAIpQLSdJ98wULS1awzEz2kMojibPSgNQyDxaGsnnQNoy047naBxbYA/formResponse";
+
+    let response = await fetch(googleFormURL, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+    });
+
+    alert("Đặt hàng thành công!");
+    closeForm();
+});
+function toggleQuantity(checkbox) {
+    let quantityInput = checkbox.closest("div").querySelector("input[type='number']");
+    if (checkbox.checked) {
+        quantityInput.value = 1;
+    } else {
+        quantityInput.value = "";
+    }
+    calculateTotal();
+}
+
+document.querySelectorAll("input[name='quantity']").forEach(input => {
+    input.addEventListener("input", calculateTotal);
+});
+
+function calculateTotal() {
+    let total = 0;
+    document.querySelectorAll("input[name='product']:checked").forEach((product) => {
+        let quantityInput = document.querySelector(`input[data-product="${product.value}"]`);
+        let quantity = parseInt(quantityInput.value) || 0;
+        let price = product.value === "Combo 3 vị" ? 200000 : 100000;
+        total += quantity * price;
+    });
+
+    document.getElementById("totalAmount").textContent = total.toLocaleString();
+}
+
     </script>
 </body>
 </html>
