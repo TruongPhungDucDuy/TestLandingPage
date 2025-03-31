@@ -1,0 +1,47 @@
+.logo-image {
+    height: 40px; /* Điều chỉnh chiều cao theo nhu cầu */
+    width: auto;
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bg-custom-orange {
+    background-color: #ff9d00;
+}
+
+.slideshow-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 2px solid #333; /* Thêm viền cho toàn bộ slideshow */
+    border-radius: 15px; /* Bo góc cho slideshow */
+    padding: 20px; /* Thêm khoảng cách bên trong */
+    max-width: 95%; /* Giới hạn chiều rộng của slideshow */
+    margin: auto; /* Căn giữa trang */
+    background-color: #fff; /* Màu nền trắng cho slideshow */
+}
+
+.slideshow-image {
+    width: 80%; /* Reduce width by 20% */
+    height: auto;
+    max-width: 600px;
+    max-height: 600px;
+    display: block;
+    object-fit: cover;
+    margin: 0 auto;
+}
+
+@media (max-width: 520px) {
+    .slideshow-image {
+        width: 80%; /* Reduce width by 20% for smaller screens */
+        height: auto;
+        max-width: 100%;
+        max-height: 300px;
+    }
+}
